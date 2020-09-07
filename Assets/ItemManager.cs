@@ -100,6 +100,13 @@ public class ItemManager : MonoBehaviour
     public void OnClearBtnDown()
     {
         //清除当前item的内容
+        //删除所有item和存档
+        PlayerPrefs.DeleteAll();
+        int count = content.childCount;
+        for (int i = 0; i < count; i++)
+        {
+            Destroy(content.GetChild(0).gameObject);
+        }
     }
     public void OnClearAllBtnDown()
     {
@@ -116,8 +123,10 @@ public class ItemManager : MonoBehaviour
         GameObject itemObj = Instantiate(Resources.Load<GameObject>("Prefabs/DailyItem"));
         itemObj.transform.parent = content;
         Item item = itemObj.GetComponent<Item>();
+        itemList.Add(item);
         currentIndex = PlayerPrefs.GetInt("currentIndex");
-        item.index = currentIndex++;
+        currentIndex+=1;
+        item.index = currentIndex;
         itemObj.name = "dailyItem" + item.index.ToString();
 
         SaveCurrentIndex(currentIndex);
@@ -128,10 +137,12 @@ public class ItemManager : MonoBehaviour
     {
         //删除当前末尾的item
         DeleteItemInfo(itemIndex);
-
-        currentIndex = PlayerPrefs.GetInt("currentIndex");        
+        
+        currentIndex = PlayerPrefs.GetInt("currentIndex");
+        Debug.Log("currentIndex: "+currentIndex);
+        if (currentIndex <= 0) return;
         Destroy(itemList[currentIndex-1].gameObject);
-       
+        itemList.Remove(itemList[currentIndex - 1]);
         currentIndex--;
         SaveCurrentIndex(currentIndex);
 
